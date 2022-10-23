@@ -181,6 +181,7 @@ return [
         Illuminate\Translation\TranslationServiceProvider::class,
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
+        Plank\Mediable\MediableServiceProvider::class,
 
         /*
          * Package Service Providers...
@@ -208,8 +209,9 @@ return [
     |
     */
 
-    'aliases' => Facade::defaultAliases()->merge([
-        // 'ExampleClass' => App\Example\ExampleClass::class,
-    ])->toArray(),
-
+    'aliases' => [
+        //...
+        'MediaUploader' => Plank\Mediable\MediaUploaderFacade::class,
+        //...
+    ]
 ];
