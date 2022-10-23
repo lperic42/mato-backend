@@ -6,7 +6,6 @@ use App\Http\Resources\Api\PetTypesCollectionResource;
 use App\Traits\MediaUploadComponentTrait;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\App;
-use Plank\Mediable\Mediable;
 
 class ProductsResource extends JsonResource
 {

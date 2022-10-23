@@ -7,7 +7,7 @@ use App\Http\Resources\ProductsResource;
 use App\Models\Product;
 use App\Traits\MediaUploadComponentTrait;
 use Illuminate\Http\Request;
-use Plank\Mediable\Facades\MediaUploader;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class ProductController extends Controller
 {
@@ -29,7 +29,10 @@ class ProductController extends Controller
         $product->discount_price = $request->discount_price;
 
         if($product->save()) {
-            $this->syncModelMedia($product, $request->get('featured_image', []), 'featured_image');
+            $product
+                ->addMedia($request->featured_image) //starting method
+                ->preservingOriginal() //middle method
+                ->toMediaCollection(); //finishing method
             $product->subcategories()->sync($request->subcategory_ids);
         };
         $product->save();
