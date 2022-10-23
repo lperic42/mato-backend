@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\CategoriesController;
 use App\Http\Controllers\Api\SubcategoriesController;
+use App\Http\Controllers\Api\ProductController;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,3 +27,9 @@ Route::post('subcategories', [SubcategoriesController::class, 'store'])->name('s
 Route::get('subcategories/{subcategory}', [SubcategoriesController::class, 'show'])->name('subcategories.show');
 Route::put('subcategories/{subcategory}', [SubcategoriesController::class, 'update'])->name('subcategories.update');
 Route::delete('subcategories', [SubcategoriesController::class, 'delete'])->name('subcategories.delete');
+
+Route::get('products', [ProductController::class, 'index'])->name('products.index');
+Route::post('products', [ProductController::class, 'store'])->name('products.store');
+Route::get('products/{product}', [ProductController::class, 'show'])->name('products.show');
+Route::put('products/{product}', [ProductController::class, 'update'])->name('products.update');
+Route::delete('products', [ProductController::class, 'delete'])->name('products.delete');
