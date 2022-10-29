@@ -7,6 +7,7 @@ use App\Http\Resources\ProductsResource;
 use App\Models\Product;
 use App\Traits\MediaUploadComponentTrait;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class ProductController extends Controller
@@ -30,9 +31,15 @@ class ProductController extends Controller
 
         if($product->save()) {
             $product
-                ->addMedia($request->featured_image) //starting method
-                ->preservingOriginal() //middle method
-                ->toMediaCollection(); //finishing method
+                ->addMedia($request->file('thumbnail'))
+                ->toMediaCollection('thumbnail');
+
+            foreach($request->file('gallery') as $g) {
+                $product
+                    ->addMedia($g)
+                    ->toMediaCollection('gallery');
+            }
+
             $product->subcategories()->sync($request->subcategory_ids);
         };
         $product->save();
