@@ -22,8 +22,8 @@ class Product extends Model
 
     public function getFeaturedImageAttribute()
     {
-        if($this->firstMedia('thumbnail')) {
-            return $this->firstMedia('thumbnail')->getUrl();
+        if($this->firstMedia('featured_image')) {
+            return $this->firstMedia('featured_image')->getUrl();
         }
 
         return '';
@@ -31,6 +31,15 @@ class Product extends Model
 
     public function getGalleryAttribute()
     {
+        $gallery = [];
+        if($this->firstMedia('gallery')) {
+            foreach($this->getMedia('gallery') as $g) {
+                $gallery[] = $g->getUrl();
+            }
 
+            return $gallery;
+        }
+
+        return '';
     }
 }

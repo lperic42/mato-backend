@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ProductsCollection;
 use App\Http\Resources\ProductsResource;
 use App\Models\Product;
 use Illuminate\Http\Request;
@@ -13,7 +14,7 @@ class ProductController extends Controller
     public function index() {
         $products = Product::get();
 
-        return new ProductsResource($products);
+        return new ProductsCollection($products);
 
     }
 
@@ -26,9 +27,15 @@ class ProductController extends Controller
         $product->discount_price = $request->discount_price;
 
         if($product->save()) {
-            if($request->has('avatar')) {
-                $media = MediaUploader::fromSource($request->thumbnail)->upload();
-                $product->syncMedia($media, 'thumbnail');
+            if($request->has('featured_image')) {
+                $media = MediaUploader::fromSource($request->featured_image)->upload();
+                $product->syncMedia($media, 'featured_image');
+            }
+            if($request->has('gallery')) {
+                foreach($request->gallery as $g) {
+                    $media = MediaUploader::fromSource($g)->upload();
+                    $product->attachMedia($media, 'gallery');
+                }
             }
 
             $product->subcategories()->sync($request->subcategory_ids);
@@ -51,17 +58,21 @@ class ProductController extends Controller
         $product->discount_price = $request->discount_price;
         $product->save();
 
-        $thumbnailArray = [];
-        $galleryArray = [];
+        if($product->save()) {
+            if($request->has('featured_image')) {
+                $media = MediaUploader::fromSource($request->featured_image)->upload();
+                $product->syncMedia($media, 'featured_image');
+            }
+            if($request->has('gallery')) {
+                $product->detachMediaTags('gallery');
+                foreach($request->gallery as $g) {
+                    $media = MediaUploader::fromSource($g)->upload();
+                    $product->attachMedia($media, 'gallery');
+                }
+            }
 
-        array_push($thumbnailArray, $request->thumbnail);
-        array_push($galleryArray, $request->gallery);
-
-        $product
-            ->updateMedia($thumbnailArray, 'thumbnail');
-        $product
-            ->updateMedia($galleryArray, 'gallery');
-
+            $product->subcategories()->sync($request->subcategory_ids);
+        };
         return $product;
     }
 

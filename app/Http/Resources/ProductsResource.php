@@ -21,6 +21,9 @@ class ProductsResource extends JsonResource
     {
         $data = parent::toArray($request);
 
+        $data['featured_image'] = $this->featured_image;
+        $data['gallery'] = $this->gallery;
+
         return $data;
     }
 }
