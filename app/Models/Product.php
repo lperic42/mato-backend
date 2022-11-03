@@ -4,14 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Spatie\MediaLibrary\HasMedia;
-use Spatie\MediaLibrary\InteractsWithMedia;
-use Spatie\Image\Manipulations;
-use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use Plank\Mediable\Mediable;
 
-class Product extends Model implements HasMedia
+class Product extends Model
 {
-    use HasFactory, InteractsWithMedia;
+    use HasFactory, Mediable;
 
     protected $with = ['subcategories'];
 
@@ -23,23 +20,17 @@ class Product extends Model implements HasMedia
         return $this->belongsToMany(Subcategory::class, 'product_subcategories', 'product_id', 'subcategory_id');
     }
 
-    public function registerMediaConversions(Media $media = null): void
-    {
-        $this->addMediaConversion('preview')
-            ->fit(Manipulations::FIT_CROP, 300, 300)
-            ->nonQueued();
-    }
-
     public function getFeaturedImageAttribute()
     {
-        $mediaItems = $this->getMedia('thumbnail')->first()->original_url;
-        return $mediaItems;
+        if($this->firstMedia('thumbnail')) {
+            return $this->firstMedia('thumbnail')->getUrl();
+        }
+
+        return '';
     }
 
     public function getGalleryAttribute()
     {
-        $mediaItems = $this->getMedia('gallery');
 
-        return $mediaItems;
     }
 }

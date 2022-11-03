@@ -31,5 +31,5 @@ Route::delete('subcategories', [SubcategoriesController::class, 'delete'])->name
 Route::get('products', [ProductController::class, 'index'])->name('products.index');
 Route::post('products', [ProductController::class, 'store'])->name('products.store');
 Route::get('products/{product}', [ProductController::class, 'show'])->name('products.show');
-Route::put('products/{product}', [ProductController::class, 'update'])->name('products.update');
+Route::post('products/{product}', [ProductController::class, 'update'])->name('products.update');
 Route::delete('products', [ProductController::class, 'delete'])->name('products.delete');

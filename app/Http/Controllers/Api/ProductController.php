@@ -5,15 +5,11 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ProductsResource;
 use App\Models\Product;
-use App\Traits\MediaUploadComponentTrait;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
-use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use Plank\Mediable\Facades\MediaUploader;
 
 class ProductController extends Controller
 {
-    use MediaUploadComponentTrait;
-
     public function index() {
         $products = Product::get();
 
@@ -30,18 +26,14 @@ class ProductController extends Controller
         $product->discount_price = $request->discount_price;
 
         if($product->save()) {
-            $product
-                ->addMedia($request->file('thumbnail'))
-                ->toMediaCollection('thumbnail');
-
-            foreach($request->file('gallery') as $g) {
-                $product
-                    ->addMedia($g)
-                    ->toMediaCollection('gallery');
+            if($request->has('avatar')) {
+                $media = MediaUploader::fromSource($request->thumbnail)->upload();
+                $product->syncMedia($media, 'thumbnail');
             }
 
             $product->subcategories()->sync($request->subcategory_ids);
         };
+
         $product->save();
 
         return $product;
@@ -58,6 +50,17 @@ class ProductController extends Controller
         $product->price = $request->price;
         $product->discount_price = $request->discount_price;
         $product->save();
+
+        $thumbnailArray = [];
+        $galleryArray = [];
+
+        array_push($thumbnailArray, $request->thumbnail);
+        array_push($galleryArray, $request->gallery);
+
+        $product
+            ->updateMedia($thumbnailArray, 'thumbnail');
+        $product
+            ->updateMedia($galleryArray, 'gallery');
 
         return $product;
     }
